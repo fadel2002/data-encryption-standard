@@ -78,6 +78,7 @@ DWORD WINAPI listenThread(LPVOID lpParam) {
 	DES_Encryption DES; 
     CHAT message;
     string received_message;
+    string client_id = data.message;
     int messageLength=0;
     int des_iteration=0;
     int bytesReceived=0;
@@ -95,14 +96,14 @@ DWORD WINAPI listenThread(LPVOID lpParam) {
     while (true) {
         // Print user yang terhubung
         cout << "Connected user:\n";
-        for (auto client_id : client_ids)
-            cout << client_id << "|";
+        for (auto c_id : client_ids)
+            cout << c_id << "|";
         cout << "\n\n";
         // Menerima panjang pesan dari client
         bytesReceived = recv(client_socket, reinterpret_cast<char*>(&messageLength), sizeof(messageLength), 0);
         if (bytesReceived <= 0) {
             cerr << "\n\nError receiving message length.\nClosing thread.\n";
-            eraseClient(data.message);
+            eraseClient(client_id);
             break;
         }
         // Membuat buffer sesuai panjang pesan dari client
@@ -111,7 +112,7 @@ DWORD WINAPI listenThread(LPVOID lpParam) {
         bytesReceived = recv(client_socket, buffer, messageLength, 0);
         if (bytesReceived <= 0) {
             cerr << "Error receiving message.\n";
-            eraseClient(data.message);
+            eraseClient(client_id);
             delete[] buffer;
             break;
         }
