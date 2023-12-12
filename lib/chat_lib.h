@@ -2,7 +2,7 @@
 #define CHAT_LIB_H
 
 /* 
-	Function List On CHAT Class:
+    Function List On CHAT Class:
 
     randomizeKey();
     void setKey(string k);

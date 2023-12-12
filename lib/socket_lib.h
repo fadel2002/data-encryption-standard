@@ -6,6 +6,8 @@
 
     int startServerSocket(unsigned short port, unsigned long address);
     int startClientSocket(unsigned short port, const char* address);
+    int startServerMultipleClient()
+    int acceptClient()
     int startServer();
     int startClient();
     SOCKET getClientSocket();
