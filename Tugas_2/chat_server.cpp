@@ -1,9 +1,13 @@
 #include "../main_header.h"
 
+/* Run code
+    cd "...\" ; if ($?) { g++ chat_server.cpp -o chat_server -lws2_32 } ; if ($?) { .\chat_server }
+*/
+
 DWORD WINAPI listenThread(LPVOID lpParam) {
     SOCKET clientSocket = *static_cast<SOCKET*>(lpParam);
 	DES_Encryption DES; 
-    CHAT chat;
+    CHAT message;
     string received_message;
     int messageLength=0;
     int des_iteration=0;
@@ -27,11 +31,11 @@ DWORD WINAPI listenThread(LPVOID lpParam) {
         }
         // Batasi string dengan null agar hanya ditampilkan string yang sesuai
         buffer[bytesReceived] = '\0';
-        chat.setMessage(buffer);
+        message.setMessage(buffer);
         // DES Decryption
-        chat.messageDecryption();
+        message.messageDecryption();
         cout << "\n\nReceived message from client: " << buffer << "\n";
-        cout << "Actual message from client: " << chat.getMessage() << "\n\n";
+        cout << "Actual message from client: " << message.getMessage() << "\n\n";
         // Hapus buffer setelah digunakan agar memori tidak tertumpuk
         delete[] buffer;
         cout << "Enter a message: ";
@@ -43,7 +47,7 @@ DWORD WINAPI listenThread(LPVOID lpParam) {
 DWORD WINAPI sendThread(LPVOID lpParam) {
     SOCKET clientSocket = *static_cast<SOCKET*>(lpParam);
 	DES_Encryption DES; 
-    CHAT chat;
+    CHAT message;
     string userMessage;
     int messageLength=0;
     int des_iteration=0;
@@ -52,14 +56,14 @@ DWORD WINAPI sendThread(LPVOID lpParam) {
     while (true) {
         // Prompt pesan kepada user server
         cout << "Enter a message: "; getline(cin, userMessage); cout << "\n";
-        chat.setMessage(userMessage);
+        message.setMessage(userMessage);
         // DES Encryption
-        chat.messageEncryption();
+        message.messageEncryption();
         // Kirim panjang pesan yang akan diterima oleh client
-        messageLength = chat.getMessage().length();
+        messageLength = message.getMessage().length();
         send(clientSocket, reinterpret_cast<char*>(&messageLength), sizeof(messageLength), 0);
         // Kirim pesan ke client
-        send(clientSocket, chat.getMessage().c_str(), messageLength, 0);
+        send(clientSocket, message.getMessage().c_str(), messageLength, 0);
     }
     return 0; 
 }

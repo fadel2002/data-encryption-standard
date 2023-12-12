@@ -1,5 +1,9 @@
 #include "../main_header.h"
 
+/* Run code
+    cd "...\" ; if ($?) { g++ chat_client.cpp -o chat_client -lws2_32 } ; if ($?) { .\chat_client }
+*/
+
 DWORD WINAPI listenThread(LPVOID lpParam) {
     SOCKET clientSocket = *static_cast<SOCKET*>(lpParam);
 	DES_Encryption DES; 

@@ -34,6 +34,7 @@ public:
         serverAddr.sin_family = AF_INET;
         serverAddr.sin_port = htons(port);
         serverAddr.sin_addr.s_addr = address;
+        return 1;
     }
     int startClientSocket(unsigned short port, const char* address){
         WSADATA wsData;
@@ -50,6 +51,33 @@ public:
         serverAddr.sin_family = AF_INET;
         serverAddr.sin_port = htons(port);
         serverAddr.sin_addr.s_addr = inet_addr(address);
+        return 1;
+    }
+    int startServerMultipleClient(){
+        if (bind(serverSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
+            cerr << "Bind failed.\n";
+            closesocket(serverSocket);
+            WSACleanup();
+            return -1;
+        }
+        if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR) {
+            cerr << "Listen failed.\n";
+            closesocket(serverSocket);
+            WSACleanup();
+            return -1;
+        }
+        return 1;
+    }
+    int acceptClient(){
+        clientSocket = accept(serverSocket, nullptr, nullptr);
+        cout << "Incoming conection accepted...\n";
+        if (clientSocket == INVALID_SOCKET) {
+            cerr << "Accept failed.\n";
+            closesocket(serverSocket);
+            WSACleanup();
+            return -1;
+        }
+        return 1;
     }
     int startServer(){
         if (bind(serverSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
@@ -72,6 +100,7 @@ public:
             WSACleanup();
             return -1;
         }
+        return 1;
     }
     int startClient(){
         if (connect(clientSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
@@ -80,6 +109,7 @@ public:
             WSACleanup();
             return -1;
         }
+        return 1;
     }
     SOCKET getClientSocket(){
         return clientSocket;
